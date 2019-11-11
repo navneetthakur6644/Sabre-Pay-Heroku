@@ -70,4 +70,13 @@ public interface SabrePayService {
      */
     ResponseEntity<Object> getTransactions();
 
+    /**
+     * Description : 
+     * <<WRITE DESCRIPTION HERE>>
+     * 
+     * @param emailID
+     * @return
+     */
+    ResponseEntity<Object> getUserBalance(String emailID);
+
 }

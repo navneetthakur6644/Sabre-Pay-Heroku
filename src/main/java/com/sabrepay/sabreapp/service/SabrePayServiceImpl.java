@@ -5,6 +5,7 @@ package com.sabrepay.sabreapp.service;
 
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -101,7 +102,7 @@ public class SabrePayServiceImpl implements SabrePayService {
             confirmUser = new ConfirmUserDTO();
             confirmUser.setUserName(savedUser.getEmail());
             confirmUser.setRole(savedUser.getUserRole());
-            confirmUser.setMessage("User with email " + savedUser.getEmail() + " registered successfully!");
+            confirmUser.setResult("User with email " + savedUser.getEmail() + " registered successfully!");
         }
         return confirmUser;
     }
@@ -144,7 +145,8 @@ public class SabrePayServiceImpl implements SabrePayService {
             String emailID = String.valueOf(obj[0]);
             String walletID = String.valueOf(obj[1]);
             String userRole = String.valueOf(obj[2]);
-            confirmLogin = new ConfirmLoginStatusDTO(emailID, walletID, userRole, "Authentication Successful");
+            String faceID = String.valueOf(obj[3]);
+            confirmLogin = new ConfirmLoginStatusDTO(emailID, walletID, userRole, "Authentication Successful", faceID);
         }
         return confirmLogin;
 
@@ -159,7 +161,7 @@ public class SabrePayServiceImpl implements SabrePayService {
      */
     @Override
     public ConfirmLoginStatusDTO faceIdLoginImpl(FaceIdDTO login) throws AuthenticationFailureException {
-        List<Object> loggedInUserDetails = userDAO.loginWithFaceID(login.getFaceID());
+        List<Object> loggedInUserDetails = userDAO.loginWithFaceID(login.getEmail());
         if (!CollectionUtils.isEmpty(loggedInUserDetails)) {
             return mapRetrievedDataToDTO(loggedInUserDetails);
         }
@@ -187,6 +189,22 @@ public class SabrePayServiceImpl implements SabrePayService {
     @Override
     public ResponseEntity<Object> getTransactions() {
         return restTemplate.exchange(TRANSACTION_URL, HttpMethod.GET, setHeaderAndAuthToken(), Object.class);
+    }
+    
+    /**
+     * Description : 
+     * <<WRITE DESCRIPTION HERE>>
+     * 
+     * @param emailID
+     * @return
+     */
+    @Override
+    public ResponseEntity<Object> getUserBalance(String emailID) {
+        // TODO Auto-generated method stub
+        Optional<Object> walletID = userDAO.getWalletID(emailID);
+        String URL = "https://console-ko.kaleido.io/api/v1/ledger/k0z7nyu64x/k0xpgllhtz/tokens/contracts/0xe9eF258925b3A6B57c346785EEee063d199a3950/balanceOf/0xd737b836064339e1230cf43e6d0892d15df9f7ad";
+        restTemplate.exchange(TRANSACTION_URL, HttpMethod.GET, setHeaderAndAuthToken(), Object.class);
+        return null;
     }
 
     /**

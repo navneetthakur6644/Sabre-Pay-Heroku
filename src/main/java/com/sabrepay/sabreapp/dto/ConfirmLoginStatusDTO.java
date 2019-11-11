@@ -18,12 +18,13 @@ public class ConfirmLoginStatusDTO {
      * @param userRole
      * @param faceID
      */
-    public ConfirmLoginStatusDTO(String email, String walletID, String userRole, String mesage) {
+    public ConfirmLoginStatusDTO(String email, String walletID, String userRole, String mesage, String faceID) {
         super();
         this.email = email;
         this.walletID = walletID;
         this.userRole = userRole;
         this.message = mesage;
+        this.faceID = faceID;
     }
 
     /**
@@ -40,6 +41,8 @@ public class ConfirmLoginStatusDTO {
     private String userRole;
     
     private String message;
+    
+    private String faceID;
 
     /**
      * @return the walletID
@@ -98,6 +101,20 @@ public class ConfirmLoginStatusDTO {
      */
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    /**
+     * @return the faceID
+     */
+    public String getFaceID() {
+        return faceID;
+    }
+
+    /**
+     * @param faceID the faceID to set
+     */
+    public void setFaceID(String faceID) {
+        this.faceID = faceID;
     }
 
 }

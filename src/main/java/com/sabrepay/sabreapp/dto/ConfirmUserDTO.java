@@ -24,7 +24,7 @@ public class ConfirmUserDTO {
     /**
      * message
      */
-    private String message;
+    private String result;
 
     /**
      * @return the userName
@@ -59,16 +59,16 @@ public class ConfirmUserDTO {
     /**
      * @return the message
      */
-    public String getMessage() {
-        return message;
+    public String getResult() {
+        return result;
     }
 
     /**
      * @param message
      *            the message to set
      */
-    public void setMessage(String message) {
-        this.message = message;
+    public void setResult(String result) {
+        this.result = result;
     }
 
 }

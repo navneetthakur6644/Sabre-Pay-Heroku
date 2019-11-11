@@ -36,7 +36,7 @@ import io.swagger.annotations.ApiOperation;
  * 
  * SabrePayController.java Created On: Oct 26, 2019 Created By: M1041768
  */
-@CrossOrigin(origins = "http://localhost:4200")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 @RestController
 @Api(value = "Sabre Pay", description = "Operations pertaining User Registration and Login")
 public class SabrePayController {
@@ -69,10 +69,36 @@ public class SabrePayController {
 
     @ApiOperation(value = "Login user with faceID", response = ConfirmLoginStatusDTO.class)
     @PostMapping(value = "/api/faceIdLogin")
-    public ResponseEntity<ConfirmLoginStatusDTO> loginByFaceId(@RequestBody @Valid FaceIdDTO login)
+    public ResponseEntity<Object> loginByFaceId(@RequestBody @Valid FaceIdDTO login)
         throws AuthenticationFailureException {
         ConfirmLoginStatusDTO loginStatus = sabreService.faceIdLoginImpl(login);
-        return new ResponseEntity<ConfirmLoginStatusDTO>(loginStatus, HttpStatus.OK);
+        
+        String faceID1 = loginStatus.getFaceID();
+        String faceID2 = login.getFaceID();
+        final String uri = "https://westcentralus.api.cognitive.microsoft.com/face/v1.0/verify";
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        MediaType mediaType = new MediaType("application", "json");
+        headers.setContentType(mediaType);
+        headers.set("Ocp-Apim-Subscription-Key", "9c48f86801f74031a927a15c8f9b2131");
+        //String requestJson = "{\"faceId1\": \"e9c29522-2e01-48ac-aa15-9034d650145e\",\"faceId2\": \"bdd2ad19-65c5-43f9-a2e4-dad851fc85ac\"}";
+        System.out.println("FaceID1 : " + faceID1);
+        System.out.println("FaceID2 : " + faceID2);
+        String requestJson = "{\"faceId1\": \"" + faceID1 + "\",\"faceId2\": \"" + faceID2 + "\"}";
+        HttpEntity<String> entity = new HttpEntity<String>(requestJson, headers);
+
+        ResponseEntity<Object> result;
+        try {
+            result = restTemplate.exchange(uri, HttpMethod.POST, entity, Object.class);
+            if (result != null) {
+                return result;
+            }
+        }
+        catch (RestClientException e) {
+            throw new AuthenticationFailureException("Couldn't match face");
+        }
+        
+        return null;
 
     }
 
@@ -113,13 +139,20 @@ public class SabrePayController {
         ResponseEntity<Object> accountBalance = sabreService.getBalance();
         return accountBalance;
     }
-    
+
     @ApiOperation(value = "Get last 25 transactions of the consortia")
     @GetMapping(value = "/api/getTransactions")
     public ResponseEntity<Object> getLastTransactions() {
         ResponseEntity<Object> lastTransactions = sabreService.getTransactions();
         return lastTransactions;
     }
+    
+/*    @ApiOperation(value = "Get Logged In User's Balance")
+    @GetMapping(value = "/api/getUserBalance")
+    public ResponseEntity<Object> getUserBalance(String emailID) {
+        ResponseEntity<Object> userBalance = sabreService.getUserBalance(emailID);
+        return userBalance;
+    }*/
 
     /**
      * @return the sabreService
